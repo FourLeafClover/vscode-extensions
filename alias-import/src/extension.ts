@@ -84,18 +84,20 @@ const provideHover = (
         )
         try {
           let fullPath = `${rootPath}/${realPath}`.replace(/\\/g, '/')
-          if (existsSync(`${fullPath}.js`)) {
-            fullPath += '.js'
-          } else if (existsSync(`${fullPath}.vue`)) {
-            fullPath += '.vue'
-          } else if (existsSync(`${fullPath}/index.js`)) {
-            fullPath += '/index.js'
-          } else if (existsSync(`${fullPath}/index.vue`)) {
-            fullPath += '/index.vue'
-          }
-          const importText = readFileSync(fullPath, 'UTF-8').split('\r\n')
-          if (importText) {
-            return new vscode.Hover(importText)
+          if (!fullPath.endsWith('.js') && !fullPath.endsWith('.vue')) {
+            if (existsSync(`${fullPath}.js`)) {
+              fullPath += '.js'
+            } else if (existsSync(`${fullPath}.vue`)) {
+              fullPath += '.vue'
+            } else if (existsSync(`${fullPath}/index.js`)) {
+              fullPath += '/index.js'
+            } else if (existsSync(`${fullPath}/index.vue`)) {
+              fullPath += '/index.vue'
+            }
+            const importText = readFileSync(fullPath, 'UTF-8').split('\r\n')
+            if (importText) {
+              return new vscode.Hover(importText)
+            }
           }
         } catch (e) {
           vscode.window.showInformationMessage(e.message)

@@ -69,21 +69,23 @@ const provideHover = (document, position, token) => {
                 let realPath = importPath.replace(alias, packageInfo.webpackAlias[alias]);
                 try {
                     let fullPath = `${rootPath}/${realPath}`.replace(/\\/g, '/');
-                    if (fs_1.existsSync(`${fullPath}.js`)) {
-                        fullPath += '.js';
-                    }
-                    else if (fs_1.existsSync(`${fullPath}.vue`)) {
-                        fullPath += '.vue';
-                    }
-                    else if (fs_1.existsSync(`${fullPath}/index.js`)) {
-                        fullPath += '/index.js';
-                    }
-                    else if (fs_1.existsSync(`${fullPath}/index.vue`)) {
-                        fullPath += '/index.vue';
-                    }
-                    const importText = fs_1.readFileSync(fullPath, 'UTF-8').split('\r\n');
-                    if (importText) {
-                        return new vscode.Hover(importText);
+                    if (!fullPath.endsWith('.js') && !fullPath.endsWith('.vue')) {
+                        if (fs_1.existsSync(`${fullPath}.js`)) {
+                            fullPath += '.js';
+                        }
+                        else if (fs_1.existsSync(`${fullPath}.vue`)) {
+                            fullPath += '.vue';
+                        }
+                        else if (fs_1.existsSync(`${fullPath}/index.js`)) {
+                            fullPath += '/index.js';
+                        }
+                        else if (fs_1.existsSync(`${fullPath}/index.vue`)) {
+                            fullPath += '/index.vue';
+                        }
+                        const importText = fs_1.readFileSync(fullPath, 'UTF-8').split('\r\n');
+                        if (importText) {
+                            return new vscode.Hover(importText);
+                        }
                     }
                 }
                 catch (e) {
