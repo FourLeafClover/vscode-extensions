@@ -76,44 +76,45 @@ const provideHover = (
       const alias: string =
         Object.keys(packageInfo.webpackAlias).find(key =>
           importPath.startsWith(key)
-        ) || ''
+        ) || '';
       if (alias) {
         let realPath = importPath.replace(
           alias,
           packageInfo.webpackAlias[alias]
         )
         try {
-          let fullPath = `${rootPath}/${realPath}`.replace(/\\/g, '/')
-          if (!fullPath.endsWith('.js') && !fullPath.endsWith('.vue')) {
-            if (existsSync(`${fullPath}.js`)) {
-              fullPath += '.js'
-            } else if (existsSync(`${fullPath}.vue`)) {
-              fullPath += '.vue'
-            } else if (existsSync(`${fullPath}/index.js`)) {
-              fullPath += '/index.js'
-            } else if (existsSync(`${fullPath}/index.vue`)) {
-              fullPath += '/index.vue'
-            }
-            const importText = readFileSync(fullPath, 'UTF-8').split('\r\n')
+          let fullPath = `${rootPath}/${realPath}`.replace(/\\/g, '/');
+          if (existsSync(`${fullPath}.js`)) {
+            fullPath += '.js';
+          } else if (existsSync(`${fullPath}.vue`)) {
+            fullPath += '.vue';
+          } else if (existsSync(`${fullPath}/index.js`)) {
+            fullPath += '/index.js';
+          } else if (existsSync(`${fullPath}/index.vue`)) {
+            fullPath += '/index.vue';
+          }
+          if (fullPath.endsWith('.js') || fullPath.endsWith('.vue')) {
+            const importText = readFileSync(fullPath, 'UTF-8').split('\r\n');
             if (importText) {
-              return new vscode.Hover(importText)
+              return new vscode.Hover(importText);
             }
           }
+
         } catch (e) {
-          vscode.window.showInformationMessage(e.message)
+          vscode.window.showInformationMessage(e.message);
         }
       }
     }
-    return null
+    return null;
   }
-  return null
+  return null;
 }
 
 export function activate(context: vscode.ExtensionContext) {
-  console.log('Congratulations, your extension "alias-import" is now active!')
+  console.log('Congratulations, your extension "alias-import" is now active!');
 
   const resolveCompletionItem = () => {
-    return null
+    return null;
   }
   context.subscriptions.push(
     vscode.languages.registerCompletionItemProvider(
@@ -124,12 +125,12 @@ export function activate(context: vscode.ExtensionContext) {
       },
       '/'
     )
-  )
+  );
   context.subscriptions.push(
     vscode.languages.registerHoverProvider('*', {
       provideHover
     })
-  )
+  );
 }
 
 export function deactivate() {}
