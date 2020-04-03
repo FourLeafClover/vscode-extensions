@@ -13,6 +13,11 @@
 	"activationEvents": [
 		"*"
 	],
+	"contributes":{
+		"json": {
+      "customData": ["./html.html-data.json"]
+    }
+	},
 	"main": "./out/extension.js",
 	"scripts": {
 		"vscode:prepublish": "yarn run compile",
