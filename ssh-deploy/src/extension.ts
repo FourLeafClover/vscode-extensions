@@ -1,12 +1,12 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode'
-import { Deploy } from './business'
+import { Deploy, getBeforeUploadCommand, writeLog } from './business'
 import { StatusBarAlignment } from 'vscode'
-import { existsSync, writeFileSync, copyFileSync, readFileSync } from 'fs'
+import { existsSync, writeFileSync, readFileSync } from 'fs'
 import defaultConf from './business/default.conf'
-import { dirname } from 'path'
-const cmd = require('node-cmd')
+const exec = require('child_process').exec
+const os = require('os')
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -27,51 +27,65 @@ export function activate(context: vscode.ExtensionContext) {
   barItem.command = 'extension.sshDeploy'
   let sshDeployCommpand = vscode.commands.registerCommand(
     'extension.sshDeploy',
-    function() {
+    function () {
       const ADDRCONFIG = '+ 创建SSH上传配置'
       const selectKeys: Array<string> = [ADDRCONFIG]
       let config: any = null
       if (existsSync(configPath)) {
         try {
-          config = require(configPath)
-          Object.keys(config).forEach(key => {
+          const data = readFileSync(configPath, 'utf-8')
+          config = JSON.parse(data)
+          Object.keys(config).forEach((key) => {
             config[key].localPath = `${rootPath}/${config[key].localPath}`
           })
           selectKeys.push(...Object.keys(config))
         } catch (e) {
-          vscode.window.showErrorMessage('配置文件读取失败,不是标准的Json文件') 
+          vscode.window.showErrorMessage('配置文件读取失败,不是标准的Json文件')
         }
       }
       vscode.window
         .showQuickPick(selectKeys, {
           canPickMany: false,
-          ignoreFocusOut: true,
+          ignoreFocusOut: false,
           matchOnDescription: true,
           matchOnDetail: true,
-          placeHolder: '请选择你要部署的环境/添加对应配置'
+          placeHolder: '请选择你要部署的环境/添加对应配置',
         })
         .then((select: any) => {
           if (select === ADDRCONFIG) {
             try {
               writeFileSync(configPath, defaultConf)
-              vscode.window.showInformationMessage('配置文件ssh-deploy.conf.json创建成功')
+              vscode.window.showInformationMessage(
+                '配置文件ssh-deploy.conf.json创建成功'
+              )
             } catch (e) {
               vscode.window.showErrorMessage(e)
             }
           } else {
             let curConfig = config[select]
+            writeLog('-----------开始-----------', false)
             if (curConfig) {
               if (curConfig.beforeUploadCmd) {
-                console.log(`正在执行命令${curConfig.beforeUploadCmd}`)
-                cmd.get(curConfig.beforeUploadCmd, (err: any, data: any) => {
-                  if (!err) {
-                    console.log(`命令执行完毕`)
-                    Deploy(curConfig)
-                  } else {
-                    vscode.window.showErrorMessage('beforeUploadCmd错误')
-                    console.log(err)
+                const message = `正在执行命令${curConfig.beforeUploadCmd}`
+                writeLog(message)
+                vscode.window.showInformationMessage(message)
+                exec(
+                  getBeforeUploadCommand(rootPath, curConfig.beforeUploadCmd),
+                  (err: any, data: any) => {
+                    if (!err) {
+                      console.log(`命令执行完毕`)
+                      const message = `命令执行完毕`
+                      writeLog(data)
+                      writeLog(message)
+                      vscode.window.showInformationMessage(message)
+                      Deploy(curConfig)
+                    } else {
+                      const message = `执行命令失败:${err.message}`
+                      vscode.window.showErrorMessage(message)
+                      writeLog('-----------结束-----------', false)
+                    }
                   }
-                })
+                )
               } else {
                 Deploy(curConfig)
               }

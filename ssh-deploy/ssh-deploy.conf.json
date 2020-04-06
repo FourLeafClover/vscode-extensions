@@ -1,0 +1,24 @@
+{
+  "dev": {
+    "account": {
+      "host": "",
+      "port": "",
+      "username": "",
+      "password": ""
+    },
+    "beforeUploadCmd": "vsce package",
+    "localPath": "dist/",
+    "remotePath": "/etc/nginx/xxxx/"
+  },
+  "test": {
+    "account": {
+      "host": "",
+      "port": "",
+      "username": "",
+      "password": ""
+    },
+    "beforeUploadCmd": "",
+    "localPath": "",
+    "remotePath": ""
+  }
+}

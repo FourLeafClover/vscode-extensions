@@ -1,36 +1,29 @@
 {
 	"name": "ssh-deploy",
-	"displayName": "SSH上传工具",
-	"description": "SSH上传工具",
+	"displayName": "ssh-deploy",
+	"description": "ssh上传工具",
 	"publisher": "ZhangCong",
 	"version": "0.0.1",
 	"engines": {
-		"vscode": "^1.43.0"
+		"vscode": "^1.41.0"
 	},
-	"categories": [
-		"Other"
-	],
 	"activationEvents": [
 		"*"
 	],
-	"contributes":{
-		"json": {
-      "customData": ["./html.html-data.json"]
-    }
-	},
 	"main": "./out/extension.js",
 	"scripts": {
-		"vscode:prepublish": "yarn run compile",
+		"vscode:prepublish": "npm run compile",
 		"compile": "tsc -p ./",
 		"watch": "tsc -watch -p ./",
-		"pretest": "yarn run compile",
-		"test": "node ./out/test/runTest.js"
+		"pretest": "npm run compile",
+		"test": "node ./out/test/runTest.js",
+		"build": "vsce package"
 	},
 	"devDependencies": {
 		"@types/glob": "^7.1.1",
 		"@types/mocha": "^5.2.7",
 		"@types/node": "^12.11.7",
-		"@types/vscode": "^1.43.0",
+		"@types/vscode": "^1.41.0",
 		"glob": "^7.1.5",
 		"mocha": "^6.2.2",
 		"typescript": "^3.6.4",
@@ -38,6 +31,9 @@
 		"vscode-test": "^1.2.2"
 	},
 	"dependencies": {
+		"@types/bluebird": "^3.5.30",
+		"bluebird": "^3.7.2",
+		"node-cmd": "^3.0.0",
 		"ssh2-sftp-client": "^5.1.2"
 	}
 }
