@@ -63,8 +63,8 @@ export function activate(context: vscode.ExtensionContext) {
             }
           } else {
             let curConfig = config[select]
-            writeLog('-----------开始-----------', false)
             if (curConfig) {
+              writeLog('-----------开始-----------', false)
               if (curConfig.beforeUploadCmd) {
                 const message = `正在执行命令${curConfig.beforeUploadCmd}`
                 writeLog(message)
